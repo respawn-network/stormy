@@ -39,6 +39,12 @@ channelConfigs: # array of channel configurations
         # - Time - the time the original message was sent
         # - Date - the date the original message was sent
         message: "{{.MessageQuoted}}\n\n*by {{.Author}}*"
+        # defines if the reaction should be added by the bot for easier access
+        # Default: false
+        autoReact: true
+        # defines if the reaction should be deleted upon crosspost
+        # Default: false
+        autoDelete: true
         # defines users that are authorize to repost, admins can always repost
         rigths:
           userIDs: # array of ids of users that can trigger a repost

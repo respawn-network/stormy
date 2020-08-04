@@ -67,6 +67,14 @@ type (
 		Target discord.ChannelID
 		// Reaction is the reaction that is being watched.
 		Reaction api.Emoji
+		// AutoReact defines if the Reaction should be added by the bot.
+		//
+		// Default: false
+		AutoReact bool
+		// AutoDelete defines if the Reaction should be deleted upon crosspost.
+		//
+		// Default: false
+		AutoDelete bool
 		// Message is the message sent as formatted by template.Template.
 		//
 		// Available variables are

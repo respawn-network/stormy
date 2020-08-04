@@ -3,7 +3,6 @@ package bot
 import (
 	"strings"
 
-	"github.com/mavolin/dasync/pkg/dasync"
 	"github.com/mavolin/disstate/pkg/state"
 	"go.uber.org/multierr"
 	"go.uber.org/zap"
@@ -27,28 +26,29 @@ func (b *Bot) handlePost(s *state.State, e *state.MessageCreateEvent, c config.C
 		"channel_id", e.ChannelID,
 		"guild_id", e.GuildID)
 
-	errCallbacks := make([]func() error, 0, len(c.AutoReactions)+len(c.RepostReactions))
-
 	for _, r := range c.AutoReactions {
-		rf := dasync.React(s, e.ChannelID, e.ID, r)
-		errCallbacks = append(errCallbacks, rf)
+		err2 := s.React(e.ChannelID, e.ID, r)
+		if err2 != nil {
+			err = multierr.Append(err, err2)
+		}
 	}
 
 	for _, r := range c.ScanReactions {
 		if strings.Contains(e.Content, r) {
-			rf := dasync.React(s, e.ChannelID, e.ID, r)
-			errCallbacks = append(errCallbacks, rf)
+			err2 := s.React(e.ChannelID, e.ID, r)
+			if err2 != nil {
+				err = multierr.Append(err, err2)
+			}
 		}
 	}
 
 	for _, r := range c.RepostReactions {
-		rf := dasync.React(s, e.ChannelID, e.ID, r.Reaction)
-		errCallbacks = append(errCallbacks, rf)
-	}
-
-	// collect our errors
-	for _, c := range errCallbacks {
-		err = multierr.Append(err, c())
+		if r.AutoReact {
+			err2 := s.React(e.ChannelID, e.ID, r.Reaction)
+			if err2 != nil {
+				err = multierr.Append(err, err2)
+			}
+		}
 	}
 
 	return
