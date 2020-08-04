@@ -93,5 +93,8 @@ func loadConfig() (*config.Config, error) {
 
 	zap.S().Info("reading config")
 
-	return config.Load()
+	c, err := config.Load()
+	zap.S().Debugw("config read", "config", c)
+
+	return c, err
 }
