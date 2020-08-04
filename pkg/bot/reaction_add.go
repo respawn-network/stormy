@@ -93,6 +93,7 @@ type templateFields struct {
 func (b *Bot) crosspost(s *state.State, e *state.MessageReactionAddEvent, r config.RepostReaction) (err error) {
 	msgf := dasync.Message(s, e.ChannelID, e.MessageID)
 	memf := dasync.Member(s, e.GuildID, e.UserID)
+	rf := dasync.DeleteReactions(s, e.ChannelID, e.MessageID, e.Emoji.APIString())
 
 	msg, err := msgf()
 	if err != nil {
@@ -104,11 +105,22 @@ func (b *Bot) crosspost(s *state.State, e *state.MessageReactionAddEvent, r conf
 		return err
 	}
 
+	authorName := mem.Nick
+	if authorName == "" {
+		authorName = msg.Author.Username
+	}
+
+	crossposterName := e.Member.Nick
+	if crossposterName == "" {
+		crossposterName = e.Member.User.Username
+	}
+
 	f := templateFields{
 		Message:            msg.Content,
-		Author:             mem.Nick,
+		MessageQuoted:      strings.ReplaceAll(msg.Content, "\n", "\n> "),
+		Author:             authorName,
 		AuthorMention:      mem.Mention(),
-		Crossposter:        e.Member.Nick,
+		Crossposter:        crossposterName,
 		CrossposterMention: e.Member.Mention(),
 		SourceChannel:      fmt.Sprintf("<#%d>", msg.ChannelID),
 		Time:               msg.Timestamp.Format(b.Config.TimeFormat),
@@ -131,8 +143,12 @@ func (b *Bot) crosspost(s *state.State, e *state.MessageReactionAddEvent, r conf
 	post := builder.String()
 
 	if len(post) <= maxMsgLen {
-		_, err := s.SendText(e.ChannelID, post)
-		return err
+		_, err := s.SendText(r.Target, post)
+		if err != nil {
+			return err
+		}
+
+		return rf()
 	}
 
 	msgs := splitMessage(post)
@@ -140,7 +156,7 @@ func (b *Bot) crosspost(s *state.State, e *state.MessageReactionAddEvent, r conf
 	errCallbacks := make([]func() (*discord.Message, error), len(msgs))
 
 	for i, m := range msgs {
-		errCallbacks[i] = dasync.SendText(s, e.ChannelID, m)
+		errCallbacks[i] = dasync.SendText(s, r.Target, m)
 
 		time.Sleep(1 * time.Millisecond) // make sure we keep the correct order
 	}
@@ -149,6 +165,8 @@ func (b *Bot) crosspost(s *state.State, e *state.MessageReactionAddEvent, r conf
 		_, err2 := c()
 		err = multierr.Append(err, err2)
 	}
+
+	err = multierr.Append(err, rf())
 
 	return
 }
