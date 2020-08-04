@@ -75,7 +75,7 @@ type (
 		//		AuthorMention - a mention of the author
 		//		Crossposter - the name of the user who authorized the crosspost
 		//		CrossposterMention - a mention of the user who authorized the crosspost
-		// 		SourceChanel - a mention of the original channel
+		// 		SourceChannel - a mention of the original channel
 		//		Time - the time the original message was sent
 		//		Date - the date the original message was sent
 		//
