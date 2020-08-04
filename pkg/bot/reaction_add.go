@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 	"text/template"
-	"time"
 
 	"github.com/diamondburned/arikawa/discord"
 	"github.com/mavolin/dasync/pkg/dasync"
@@ -101,7 +100,11 @@ func (b *Bot) crosspost(s *state.State, e *state.MessageReactionAddEvent, r conf
 
 	msgf := dasync.Message(s, e.ChannelID, e.MessageID)
 	memf := dasync.Member(s, e.GuildID, e.UserID)
-	rf := dasync.DeleteReactions(s, e.ChannelID, e.MessageID, e.Emoji.APIString())
+
+	rf := func() error { return nil }
+	if r.AutoDelete {
+		rf = dasync.DeleteReactions(s, e.ChannelID, e.MessageID, e.Emoji.APIString())
+	}
 
 	msg, err := msgf()
 	if err != nil {
@@ -152,31 +155,19 @@ func (b *Bot) crosspost(s *state.State, e *state.MessageReactionAddEvent, r conf
 
 	if len(post) <= maxMsgLen {
 		_, err := s.SendText(r.Target, post)
-		if err != nil {
-			return err
-		}
-
-		return rf()
+		return multierr.Append(err, rf())
 	}
 
 	msgs := splitMessage(post)
 
-	errCallbacks := make([]func() (*discord.Message, error), len(msgs))
-
-	for i, m := range msgs {
-		errCallbacks[i] = dasync.SendText(s, r.Target, m)
-
-		time.Sleep(1 * time.Millisecond) // make sure we keep the correct order
+	for _, m := range msgs {
+		_, err2 := s.SendText(r.Target, m)
+		if err2 != nil {
+			err = multierr.Append(err, err2)
+		}
 	}
 
-	for _, c := range errCallbacks {
-		_, err2 := c()
-		err = multierr.Append(err, err2)
-	}
-
-	err = multierr.Append(err, rf())
-
-	return
+	return multierr.Append(err, rf())
 }
 
 func splitMessage(msg string) (msgs []string) {
