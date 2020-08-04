@@ -6,6 +6,7 @@ import (
 	"github.com/mavolin/dasync/pkg/dasync"
 	"github.com/mavolin/disstate/pkg/state"
 	"go.uber.org/multierr"
+	"go.uber.org/zap"
 
 	"github.com/mavolin/stormy/pkg/config"
 )
@@ -21,6 +22,11 @@ func (b *Bot) HandleMessageCreate(s *state.State, e *state.MessageCreateEvent) e
 }
 
 func (b *Bot) handlePost(s *state.State, e *state.MessageCreateEvent, c config.ChannelConfig) (err error) {
+	zap.S().Infow("new message in watched channel",
+		"message_id", e.Message.ID,
+		"channel_id", e.ChannelID,
+		"guild_id", e.GuildID)
+
 	errCallbacks := make([]func() error, 0, len(c.AutoReactions)+len(c.RepostReactions))
 
 	for _, r := range c.AutoReactions {

@@ -6,36 +6,32 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/mavolin/disstate/pkg/state"
+	"go.uber.org/zap"
+
 	"github.com/mavolin/stormy/pkg/bot"
 	"github.com/mavolin/stormy/pkg/config"
 )
 
-var configPath = flag.String("c", "", "specify a custom config path")
+var configPathFlag = flag.String("c", "", "specify a custom config path")
+var debugFlag = flag.Bool("debug", false, "run the bot in debug mode")
 
 func init() {
 	flag.Parse()
 }
 
 func main() {
-	var c *config.Config
-	var err error
-
-	if *configPath != "" {
-		c, err = config.LoadFromPath(*configPath)
-	} else {
-		c, err = config.Load()
-	}
-
+	err := initLogger()
 	if err != nil {
 		panic(err)
 	}
 
-	b, err := bot.NewBot(c)
+	c, err := loadConfig()
 	if err != nil {
 		panic(err)
 	}
 
-	err = b.Open()
+	err = startBot(c)
 	if err != nil {
 		panic(err)
 	}
@@ -44,4 +40,58 @@ func main() {
 	signal.Notify(s, syscall.SIGTERM, syscall.SIGINT)
 
 	<-s
+}
+
+func startBot(c *config.Config) error {
+	b, err := bot.NewBot(c)
+	if err != nil {
+		return err
+	}
+
+	zap.S().Info("starting bot")
+
+	var rm func()
+	rm = b.State.MustAddHandler(func(_ *state.State, e *state.ReadyEvent) error {
+		zap.S().Infof("serving as %s on %d servers", e.User.Username, len(e.Guilds))
+
+		rm()
+
+		return nil
+	})
+
+	err = b.Open()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func initLogger() (err error) {
+	var l *zap.Logger
+
+	if *debugFlag {
+		l, err = zap.NewDevelopment()
+	} else {
+		l, err = zap.NewProduction()
+	}
+
+	if err != nil {
+		return
+	}
+
+	zap.ReplaceGlobals(l)
+	return
+}
+
+func loadConfig() (*config.Config, error) {
+	if *configPathFlag != "" {
+		zap.S().Infow("reading config", "path", *configPathFlag)
+
+		return config.LoadFromPath(*configPathFlag)
+	}
+
+	zap.S().Info("reading config")
+
+	return config.Load()
 }
