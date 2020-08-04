@@ -20,7 +20,7 @@ type Bot struct {
 
 // NewBot creates a new bot and registers all handler.s
 func NewBot(c *config.Config) (*Bot, error) {
-	s, err := state.NewWithIntents(c.Token, gateway.IntentGuildMessages, gateway.IntentGuildMessageReactions)
+	s, err := state.NewWithIntents("Bot "+c.Token, gateway.IntentGuildMessages, gateway.IntentGuildMessageReactions)
 	if err != nil {
 		return nil, err
 	}

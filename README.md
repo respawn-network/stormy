@@ -10,7 +10,7 @@ in any major configuration file format, such as json or toml.
 Below is a sample config with all fields filled:
 
 ```yml
-token: Bot your token
+token: your token
 status: dnd # default: online
 activity: watching # default: playing
 activityName: a mindmap # if empty, no activity will be displayed
