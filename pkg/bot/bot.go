@@ -12,14 +12,14 @@ import (
 // Bot is an instance of the stormy bot.
 type Bot struct {
 	// Config is the config of the bot.
-	Config config.Config
+	Config *config.Config
 
 	// State is the state.State the bot uses.
 	State *state.State
 }
 
 // NewBot creates a new bot and registers all handler.s
-func NewBot(c config.Config) (*Bot, error) {
+func NewBot(c *config.Config) (*Bot, error) {
 	s, err := state.NewWithIntents(c.Token, gateway.IntentGuildMessages, gateway.IntentGuildMessageReactions)
 	if err != nil {
 		return nil, err

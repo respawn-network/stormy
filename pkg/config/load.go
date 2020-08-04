@@ -76,8 +76,9 @@ func LoadFromPath(path string) (*Config, error) {
 
 func setupDefaults(v *viper.Viper) {
 	v.SetDefault("status", discord.OnlineStatus)
-	v.SetDefault("date-format", "January 2, 2006")
-	v.SetDefault("time-format", "3:04 PM")
+	v.SetDefault("activityType", "playing")
+	v.SetDefault("dateFormat", "January 2, 2006")
+	v.SetDefault("timeFormat", "3:04 PM")
 	v.SetDefault("location", time.Local.String())
 }
 
@@ -109,6 +110,14 @@ func loadableToConfig(lc *loadableConfig) (c *Config, err error) {
 	c.ActivityType, err = parseActivityType(lc.ActivityType)
 	if err != nil {
 		return
+	}
+
+	for i, conf := range c.ChannelConfigs {
+		for j, r := range conf.RepostReactions {
+			if r.Message == "" {
+				c.ChannelConfigs[i].RepostReactions[j].Message = "{{.Message}}"
+			}
+		}
 	}
 
 	c.Location, err = time.LoadLocation(lc.Location)
