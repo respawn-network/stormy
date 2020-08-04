@@ -5,6 +5,8 @@ Admins and authorized users can then repost those message to other channels by c
 
 ## Configuration
 Place a `stormy.yml` in the same folder as the stormy executable or specify a path to the config via the `-c` flag.
+Because we use [viper](https://github.com/spf13/viper) for configuration, you are not limited to yaml files, but may also write your configuration
+in any major configuration file format, such as json or toml.
 Below is a sample config with all fields filled:
 
 ```yml
