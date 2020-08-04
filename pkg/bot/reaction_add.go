@@ -10,6 +10,7 @@ import (
 	"github.com/mavolin/dasync/pkg/dasync"
 	"github.com/mavolin/disstate/pkg/state"
 	"go.uber.org/multierr"
+	"go.uber.org/zap"
 
 	"github.com/mavolin/stormy/pkg/config"
 )
@@ -91,6 +92,13 @@ type templateFields struct {
 }
 
 func (b *Bot) crosspost(s *state.State, e *state.MessageReactionAddEvent, r config.RepostReaction) (err error) {
+	zap.S().Infow("crosspost triggered",
+		"message_id", e.MessageID,
+		"channel_id", e.ChannelID,
+		"target_id", r.Target,
+		"crossposter_id", e.UserID,
+		"reaction", r.Reaction)
+
 	msgf := dasync.Message(s, e.ChannelID, e.MessageID)
 	memf := dasync.Member(s, e.GuildID, e.UserID)
 	rf := dasync.DeleteReactions(s, e.ChannelID, e.MessageID, e.Emoji.APIString())
