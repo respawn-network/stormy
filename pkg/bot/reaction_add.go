@@ -80,6 +80,7 @@ func (b *Bot) handleCrosspost(s *state.State, e *state.MessageReactionAddEvent, 
 
 type templateFields struct {
 	Message            string
+	MessageQuoted      string
 	Author             string
 	AuthorMention      string
 	Crossposter        string

@@ -71,6 +71,7 @@ type (
 		//
 		// Available variables are
 		// 		Message - the original message
+		//		MessageQuoted - the original message, but quoted
 		//		Author - the name of the author without descriptor
 		//		AuthorMention - a mention of the author
 		//		Crossposter - the name of the user who authorized the crosspost
