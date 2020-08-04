@@ -6,7 +6,7 @@
 # ENCODED_CONFIG => set to true, to base64 decode the config file
 # DEBUG => when set, the go binary will start in debug mode
 
-config_filename = stormy.${CONFIG_TYPE:-json}
+config_filename=stormy.${CONFIG_TYPE:-json}
 
 # read config, split in up to 4 environment variables, and create the config file
 echo ${CONFIG}${CONFIG_2}${CONFIG_3}${CONFIG_4} > $config_filename
