@@ -117,7 +117,7 @@ func (b *Bot) crosspost(s *state.State, e *state.MessageReactionAddEvent, r conf
 
 	f := templateFields{
 		Message:            msg.Content,
-		MessageQuoted:      strings.ReplaceAll(msg.Content, "\n", "\n> "),
+		MessageQuoted:      "> " + strings.ReplaceAll(msg.Content, "\n", "\n> "),
 		Author:             authorName,
 		AuthorMention:      mem.Mention(),
 		Crossposter:        crossposterName,
