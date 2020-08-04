@@ -167,7 +167,15 @@ func (b *Bot) crosspost(s *state.State, e *state.MessageReactionAddEvent, r conf
 		}
 	}
 
-	return multierr.Append(err, rf())
+	if err != nil {
+		return err
+	}
+
+	if r.DeleteOnRepost {
+		err = s.DeleteMessage(e.ChannelID, e.MessageID)
+	}
+
+	return
 }
 
 func splitMessage(msg string) (msgs []string) {
