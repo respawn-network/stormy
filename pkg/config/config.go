@@ -75,6 +75,11 @@ type (
 		//
 		// Default: false
 		AutoDelete bool
+		// DeleteOnRepost specifies whether the original message will be
+		// deleted, if crossposted.
+		//
+		// Default: false
+		DeleteOnRepost bool
 		// Message is the message sent as formatted by template.Template.
 		//
 		// Available variables are

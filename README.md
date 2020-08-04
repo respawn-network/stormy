@@ -45,6 +45,8 @@ channelConfigs: # array of channel configurations
         # defines if the reaction should be deleted upon crosspost
         # Default: false
         autoDelete: true
+        # defines if the original message get deleted on repost
+        deleteOnRepost: true
         # defines users that are authorize to repost, admins can always repost
         rigths:
           userIDs: # array of ids of users that can trigger a repost
