@@ -1,6 +1,7 @@
 package bot
 
 import (
+	"github.com/diamondburned/arikawa/discord"
 	"github.com/diamondburned/arikawa/gateway"
 	"github.com/mavolin/disstate/pkg/state"
 	"go.uber.org/zap"
@@ -35,6 +36,20 @@ func NewBot(c config.Config) (*Bot, error) {
 	s.AutoAddHandlers(b) // add our handlers automatically
 
 	return b, err
+}
+
+func (b *Bot) Open() error {
+	if err := b.State.Open(); err != nil {
+		return err
+	}
+
+	return b.State.Gateway.UpdateStatus(gateway.UpdateStatusData{
+		Game: &discord.Activity{
+			Name: b.Config.ActivityName,
+			Type: b.Config.ActivityType,
+		},
+		Status: b.Config.Status,
+	})
 }
 
 func errorHandler(err error) {
