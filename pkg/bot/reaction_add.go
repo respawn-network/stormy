@@ -98,20 +98,14 @@ func (b *Bot) crosspost(s *state.State, e *state.MessageReactionAddEvent, r conf
 		"crossposter_id", e.UserID,
 		"reaction", r.Reaction)
 
-	msgf := dasync.Message(s, e.ChannelID, e.MessageID)
-	memf := dasync.Member(s, e.GuildID, e.UserID)
+	msg, err := s.Message(e.ChannelID, e.MessageID)
 
 	rf := func() error { return nil }
 	if r.AutoDelete {
 		rf = dasync.DeleteReactions(s, e.ChannelID, e.MessageID, e.Emoji.APIString())
 	}
 
-	msg, err := msgf()
-	if err != nil {
-		return err
-	}
-
-	mem, err := memf()
+	mem, err := s.Member(msg.GuildID, msg.Author.ID)
 	if err != nil {
 		return err
 	}
