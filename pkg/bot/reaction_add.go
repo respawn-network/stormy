@@ -90,7 +90,7 @@ type templateFields struct {
 	Date               string
 }
 
-func (b *Bot) crosspost(s *state.State, e *state.MessageReactionAddEvent, r config.RepostReaction) (err error) {
+func (b *Bot) crosspost(s *state.State, e *state.MessageReactionAddEvent, r config.RepostReaction) error {
 	zap.S().Infow("crosspost triggered",
 		"message_id", e.MessageID,
 		"channel_id", e.ChannelID,
@@ -99,10 +99,15 @@ func (b *Bot) crosspost(s *state.State, e *state.MessageReactionAddEvent, r conf
 		"reaction", r.Reaction)
 
 	msg, err := s.Message(e.ChannelID, e.MessageID)
+	if err != nil {
+		return err
+	}
 
-	rf := func() error { return nil }
 	if r.AutoDelete {
-		rf = dasync.DeleteReactions(s, e.ChannelID, e.MessageID, e.Emoji.APIString())
+		err = s.DeleteReactions(e.ChannelID, e.MessageID, e.Emoji.APIString())
+		if err != nil {
+			return err
+		}
 	}
 
 	mem, err := s.Member(msg.GuildID, msg.Author.ID)
@@ -132,7 +137,7 @@ func (b *Bot) crosspost(s *state.State, e *state.MessageReactionAddEvent, r conf
 		Date:               msg.Timestamp.Format(b.Config.DateFormat),
 	}
 
-	t, err := template.New("crosspost").Parse(r.Message)
+	t, err := template.New("").Parse(r.Message)
 	if err != nil {
 		return err
 	}
@@ -149,7 +154,7 @@ func (b *Bot) crosspost(s *state.State, e *state.MessageReactionAddEvent, r conf
 
 	if len(post) <= maxMsgLen {
 		_, err := s.SendText(r.Target, post)
-		return multierr.Append(err, rf())
+		return err
 	}
 
 	msgs := splitMessage(post)
@@ -169,7 +174,7 @@ func (b *Bot) crosspost(s *state.State, e *state.MessageReactionAddEvent, r conf
 		err = s.DeleteMessage(e.ChannelID, e.MessageID)
 	}
 
-	return
+	return err
 }
 
 func splitMessage(msg string) (msgs []string) {
