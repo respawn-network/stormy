@@ -3,7 +3,7 @@ package bot
 import (
 	"strings"
 
-	"github.com/mavolin/disstate/pkg/state"
+	"github.com/mavolin/disstate/v3/pkg/state"
 	"go.uber.org/multierr"
 	"go.uber.org/zap"
 
@@ -34,7 +34,7 @@ func (b *Bot) handlePost(s *state.State, e *state.MessageCreateEvent, c config.C
 	}
 
 	for _, r := range c.ScanReactions {
-		if strings.Contains(e.Content, r) {
+		if strings.Contains(e.Content, string(r)) {
 			err2 := s.React(e.ChannelID, e.ID, r)
 			if err2 != nil {
 				err = multierr.Append(err, err2)
