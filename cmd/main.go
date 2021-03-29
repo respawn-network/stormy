@@ -6,7 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/mavolin/disstate/pkg/state"
+	"github.com/mavolin/disstate/v3/pkg/state"
 	"go.uber.org/zap"
 
 	"github.com/mavolin/stormy/pkg/bot"

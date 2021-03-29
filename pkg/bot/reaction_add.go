@@ -5,9 +5,9 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/diamondburned/arikawa/discord"
-	"github.com/mavolin/dasync/pkg/dasync"
-	"github.com/mavolin/disstate/pkg/state"
+	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/mavolin/dasync/v2/pkg/dasync"
+	"github.com/mavolin/disstate/v3/pkg/state"
 	"go.uber.org/multierr"
 	"go.uber.org/zap"
 
