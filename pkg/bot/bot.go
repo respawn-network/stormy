@@ -1,9 +1,9 @@
 package bot
 
 import (
-	"github.com/diamondburned/arikawa/discord"
-	"github.com/diamondburned/arikawa/gateway"
-	"github.com/mavolin/disstate/pkg/state"
+	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v2/gateway"
+	"github.com/mavolin/disstate/v3/pkg/state"
 	"go.uber.org/zap"
 
 	"github.com/mavolin/stormy/pkg/config"
@@ -44,9 +44,11 @@ func (b *Bot) Open() error {
 	}
 
 	return b.State.Gateway.UpdateStatus(gateway.UpdateStatusData{
-		Game: &discord.Activity{
-			Name: b.Config.ActivityName,
-			Type: b.Config.ActivityType,
+		Activities: []discord.Activity{
+			{
+				Name: b.Config.ActivityName,
+				Type: b.Config.ActivityType,
+			},
 		},
 		Status: b.Config.Status,
 	})

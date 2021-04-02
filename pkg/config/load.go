@@ -5,7 +5,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/diamondburned/arikawa/discord"
+	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v2/gateway"
 	"github.com/spf13/viper"
 )
 
@@ -15,7 +16,7 @@ type (
 	loadableConfig struct {
 		Token string
 
-		Status       discord.Status
+		Status       gateway.Status
 		ActivityType string
 		ActivityName string
 
@@ -75,7 +76,7 @@ func LoadFromPath(path string) (*Config, error) {
 }
 
 func setupDefaults(v *viper.Viper) {
-	v.SetDefault("status", discord.OnlineStatus)
+	v.SetDefault("status", gateway.OnlineStatus)
 	v.SetDefault("activityType", "playing")
 	v.SetDefault("dateFormat", "January 2, 2006")
 	v.SetDefault("timeFormat", "3:04 PM")
@@ -124,9 +125,9 @@ func loadableToConfig(lc *loadableConfig) (c *Config, err error) {
 	return
 }
 
-func isValidStatus(s discord.Status) error {
-	if s == discord.OnlineStatus || s == discord.DoNotDisturbStatus || s == discord.IdleStatus ||
-		s == discord.InvisibleStatus {
+func isValidStatus(s gateway.Status) error {
+	if s == gateway.OnlineStatus || s == gateway.DoNotDisturbStatus || s == gateway.IdleStatus ||
+		s == gateway.InvisibleStatus {
 		return nil
 	}
 

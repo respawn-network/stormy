@@ -5,8 +5,8 @@ package config
 import (
 	"time"
 
-	"github.com/diamondburned/arikawa/api"
-	"github.com/diamondburned/arikawa/discord"
+	"github.com/diamondburned/arikawa/v2/discord"
+	"github.com/diamondburned/arikawa/v2/gateway"
 )
 
 type (
@@ -18,7 +18,7 @@ type (
 		// Status is the status of the bot.
 		//
 		// Default: online
-		Status discord.Status
+		Status gateway.Status
 		// ActivityType is the ActivityType of the bot.
 		//
 		// Default: Playing
@@ -51,10 +51,10 @@ type (
 		ChannelID discord.ChannelID
 		// AutoReactions contains the emojis that will be added to every
 		// message.
-		AutoReactions []api.Emoji
+		AutoReactions []discord.APIEmoji
 		// ScanReactions contains the emojis that will be added, if found in
 		// the message.
-		ScanReactions []api.Emoji
+		ScanReactions []discord.APIEmoji
 		// RepostReactions contains the reactions that can be used to repost
 		// the message.
 		RepostReactions []RepostReaction
@@ -66,7 +66,7 @@ type (
 		// Target is the id of the channel the message will be reposted to.
 		Target discord.ChannelID
 		// Reaction is the reaction that is being watched.
-		Reaction api.Emoji
+		Reaction discord.APIEmoji
 		// AutoReact defines if the Reaction should be added by the bot.
 		//
 		// Default: false
