@@ -50,13 +50,8 @@ func startBot(c *config.Config) error {
 
 	zap.S().Info("starting bot")
 
-	var rm func()
-	rm = b.State.MustAddHandler(func(_ *state.State, e *state.ReadyEvent) error {
+	b.State.MustAddHandlerOnce(func(_ *state.State, e *state.ReadyEvent) {
 		zap.S().Infof("serving as %s on %d servers", e.User.Username, len(e.Guilds))
-
-		rm()
-
-		return nil
 	})
 
 	err = b.Open()
